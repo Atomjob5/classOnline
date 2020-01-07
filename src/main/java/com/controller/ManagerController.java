@@ -29,5 +29,11 @@ public class ManagerController {
         return "test";
     }
 
+    @RequestMapping("/toCreateClass")
+    public String toCreateClass(){return "createClass";}
+
+    @RequestMapping("/toListClass")
+    public String toListClass(){return "ListClass";}
+
 
 }
