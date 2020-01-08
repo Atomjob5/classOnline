@@ -92,7 +92,7 @@
                                         <td>${u.password}</td>
                                         <td>${u.nickname}</td>
                                         <td>${u.sex == 1 ? '男' : '女'}</td>
-                                        <td><a href="#">修改</a>/<a href="#">删除</a></td>
+                                        <td><a href="#" onclick="alterClass(this)" data-toggle="modal" data-target="#exampleModal" classid="${u.id}">重置密码</a>/<a href="/manage/deleteUser.do?id=${u.id}">删除</a></td>
                                     </tr>
                                 </c:forEach>
                             </c:if>
@@ -112,6 +112,32 @@
 </div>
 <!--End main content -->
 
+<%--修改用户信息--%>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">重置用户密码</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" name="id" id="formid" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">密码:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submitBtn" onclick="">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!--Begin core plugin -->
 <script src="/resources/js/jquery.min.js"></script>
@@ -125,9 +151,99 @@
 <!--Begin Page Level Plugin-->
 <script src="/resources/plugins/morris-chart/raphael-min.js"></script>
 <script src="/resources/plugins/jquery-sparkline/jquery.charts-sparkline.js"></script>
+
+<script src="/resources/plugins/sweetalert/sweet-alert.js"></script>
+<script src="/resources/pages/jquery.sweet-alert.custom.js"></script>
+
 <!--End Page Level Plugin-->
 
 
+<script type="text/javascript">
+    var attr;
+    $('#exampleModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        // var recipient = button.data('whatever') // Extract info from data-* attributes
+        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+        var modal = $(this)
+        modal.find('.modal-title').text('重置用户密码 ')
+
+    })
+
+    function alterClass(element) {
+        attr=$(element).attr("classid");
+        $('#formid').attr("value",attr);
+        console.log(attr);
+    }
+//修改用户密码
+    $(function () {
+        !function ($) {
+            "use strict";
+
+            var SweetAlert = function () {
+            };
+
+            //examples
+            SweetAlert.prototype.init = function () {
+
+                //更改密码
+                $('#submitBtn').click(function(){
+                    var passsword= document.getElementById("recipient-name").value
+                    $.ajax({
+                        type:"POST",
+                        url:"/manage/resetPassword.do",
+                        data:JSON.stringify({"password":passsword,"id":attr}),
+                        dataType:"json",
+                        contentType:"application/json",
+                        success:function (data) {
+                            if (data==1) {
+                                swal({
+                                    title: "搞定了!",
+                                    text: "修改成功",
+                                    type: "success",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "OK",
+                                    closeOnConfirm: false
+                                }, function(){
+                                    window.location = "/manage/toListUser.do";
+                                    return;
+                                });
+                            }
+                            if (data.status == 1) {
+                                swal("修改失败");
+                            }
+                        }
+                    })
+                });
+
+                function colorChange(node,color) {
+                    if (color == 'success') {
+                        node[0].parentNode.parentNode.classList.remove('has-error');
+                        node[0].parentNode.parentNode.classList.add('has-success');
+                    } else {
+                        node[0].parentNode.parentNode.classList.remove('has-success')
+                        node[0].parentNode.parentNode.classList.add('has-error');
+                    }
+
+                }
+
+
+            },
+                //init
+                $.SweetAlert = new SweetAlert, $.SweetAlert.Constructor = SweetAlert
+        }(window.jQuery),
+
+            //initializing
+            function ($) {
+                "use strict";
+                $.SweetAlert.init()
+            }(window.jQuery);
+
+    })
+// 修改用户密码
+
+</script>
 </body>
 
 </html>

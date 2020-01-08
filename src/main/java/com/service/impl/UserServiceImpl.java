@@ -3,14 +3,11 @@ package com.service.impl;
 import com.dao.UserDao;
 import com.model.User;
 import com.service.UserService;
-//import jdk.internal.module.ModuleLoaderMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
-
-//import java.util.List;
 
 /**
  * @author Atom
@@ -21,7 +18,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserDao userDao;
-
 
     /**
      * select * from user where id = ?
@@ -54,13 +50,39 @@ public class UserServiceImpl implements UserService {
         User user = userDao.selectOneByExample(example);
         return user;
     }
+
     @Override
-    public List<User> selectUserById(){
-        Example example=new Example(User.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andLessThanOrEqualTo("roleType",2);
-//        System.out.println("1");
-//        userList=userDao.selectByExample(example);
+    public void changePassword(User user) {
+        userDao.updateByPrimaryKeySelective(user);
+
+    }
+
+    /**
+     * select * from user where roleType < 3;
+     * @return
+     */
+    @Override
+    public List<User> selectAll() {
+        Example example = new Example(User.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andLessThan("roleType", 3);
         return userDao.selectByExample(example);
+    }
+
+    /**
+     * update user set password = ?,nickname = ?,profilePhoto = ?,sex= ? where id = ?;
+     * @param user
+     * @return
+     */
+    @Override
+    public int changeUser(User user) {
+        int influenceCount = userDao.updateByPrimaryKeySelective(user);
+        return influenceCount;
+    }
+
+    @Override
+    public int deleteUser(int id){
+        int i=userDao.deleteByPrimaryKey(id);
+        return i;
     }
 }

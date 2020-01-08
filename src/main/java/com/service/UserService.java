@@ -13,5 +13,12 @@ public interface UserService {
     boolean isExistUser(User user);
 
     User validateUser(String username, String password);
-    List<User> selectUserById();
+
+    void changePassword(User user);
+
+    List<User> selectAll();
+
+    int changeUser(User user);
+
+    int deleteUser(int password);
 }

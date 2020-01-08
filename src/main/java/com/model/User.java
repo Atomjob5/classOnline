@@ -1,8 +1,6 @@
 package com.model;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -14,6 +12,8 @@ import java.io.Serializable;
  */
 @Table(name = "tbs_user")
 public class User implements Serializable{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String username;
     private String password;
